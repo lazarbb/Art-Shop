@@ -1,0 +1,32 @@
+CREATE TABLE users (
+    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- Jedinstveni ID korisnika, primarni ključ
+    username VARCHAR(50) NOT NULL,                  -- Korisničko ime
+    email VARCHAR(100) NOT NULL UNIQUE,             -- Jedinstvena email adresa
+    password VARCHAR(255) NOT NULL,                 -- Šifrirana lozinka korisnika
+    role ENUM('user', 'admin') DEFAULT 'user',      -- Uloga korisnika (user ili admin)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Datum registracije korisnika
+) ENGINE=InnoDB;
+
+INSERT INTO users (username, email, password, role, created_at)
+VALUES ('admin', 'admin@example.com', 'Sifra123', 'admin', NOW());
+
+CREATE TABLE products (
+    id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- ID proizvoda (primarni ključ)
+    name VARCHAR(255) NOT NULL,                     -- Naziv proizvoda
+    price DECIMAL(10, 2) NOT NULL,                  -- Cijena proizvoda
+    image TEXT NOT NULL,                            -- URL slike proizvoda
+    quantity INT(11) UNSIGNED NOT NULL,             -- Količina proizvoda na skladištu
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- Datum kada je proizvod dodan
+) ENGINE=InnoDB;
+
+CREATE TABLE orders (
+    order_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, -- ID narudžbe (primarni ključ)
+    user_id INT(11) UNSIGNED,                            -- ID korisnika (vanjski ključ iz tablice users)
+    first_name VARCHAR(100) NOT NULL,                    -- Ime korisnika
+    last_name VARCHAR(100) NOT NULL,                     -- Prezime korisnika
+    address TEXT NOT NULL,                               -- Adresa za isporuku
+    products TEXT NOT NULL,                              -- Popis proizvoda u narudžbi (može biti JSON formatiran string)
+    total_price DECIMAL(10, 2) NOT NULL,                 -- Ukupna cijena narudžbe
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Datum i vrijeme narudžbe
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL -- Veza prema tablici users
+) ENGINE=InnoDB;
